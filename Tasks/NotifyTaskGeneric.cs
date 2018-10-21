@@ -128,5 +128,10 @@ namespace Sharpnado.Infrastructure.Tasks
         {
             throw new NotSupportedException();
         }
+
+        public void CancelCallbacks()
+        {
+            throw new NotSupportedException();
+        }
     }
 }

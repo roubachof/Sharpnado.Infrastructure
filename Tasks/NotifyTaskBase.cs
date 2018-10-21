@@ -83,6 +83,11 @@ namespace Sharpnado.Infrastructure.Tasks
         /// In case of a cold task, we start it manually.
         /// </summary>
         void Start();
+
+        /// <summary>
+        /// Cancels the callbacks: the task will execute till the end, but none of the callbacks or npc will be invoked.
+        /// </summary>
+        void CancelCallbacks();
     }
 
     /// <summary>
@@ -125,6 +130,8 @@ namespace Sharpnado.Infrastructure.Tasks
         /// Callback called when the task completed (successfully or not).
         /// </summary>
         private readonly Action<INotifyTask> _whenCompleted;
+
+        private bool _areCallbacksCancelled;
 
         /// <summary>
         /// Instance logger.
@@ -204,9 +211,14 @@ namespace Sharpnado.Infrastructure.Tasks
             }
         }
 
+        public void CancelCallbacks()
+        {
+            _areCallbacksCancelled = true;
+        }
+
         protected static void DefaultErrorHandler(string message, Exception exception)
         {
-            Debug.WriteLine($"{message}, Exception:{Environment.NewLine}{exception}");
+            Debug.WriteLine($"NotifyTask|ERROR|{message}, Exception:{Environment.NewLine}{exception}");
         }
 
         protected async Task MonitorTaskAsync(Task task)
@@ -245,7 +257,7 @@ namespace Sharpnado.Infrastructure.Tasks
         private void InvokeCallbacks(Task task)
         {
             var propertyChanged = PropertyChanged;
-            if (propertyChanged == null && !HasCallbacks)
+            if (_areCallbacksCancelled || (propertyChanged == null && !HasCallbacks))
             {
                 return;
             }

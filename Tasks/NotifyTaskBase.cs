@@ -218,7 +218,7 @@ namespace Sharpnado.Infrastructure.Tasks
 
         protected static void DefaultErrorHandler(string message, Exception exception)
         {
-            Debug.WriteLine($"NotifyTask|ERROR|{message}, Exception:{Environment.NewLine}{exception}");
+            Trace.WriteLine($"NotifyTask|ERROR|{message}, Exception:{Environment.NewLine}{exception}");
         }
 
         protected async Task MonitorTaskAsync(Task task)
